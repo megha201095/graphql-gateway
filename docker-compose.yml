@@ -1,0 +1,21 @@
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    environment:
+      NODE_ENV: development
+      PORT: 4000
+      MONGODB_URI: ${MONGODB_URI:-mongodb+srv://megha201095_db_user:<db_password>@cluster0.abywixe.mongodb.net/Vehicle-Service?appName=Cluster0}
+      MONGODB_DB_NAME: ${MONGODB_DB_NAME:-Vehicle-Service}
+      NHTSA_GET_ALL_MAKES_URL: https://vpic.nhtsa.dot.gov/api/vehicles/getallmakes?format=XML
+      NHTSA_GET_VEHICLE_TYPES_URL: https://vpic.nhtsa.dot.gov/api/vehicles/GetVehicleTypesForMakeId/{makeId}?format=xml
+      LOG_LEVEL: info
+      INGEST_ON_STARTUP: "true"
+    ports:
+      - "4000:4000"
+    volumes:
+      - app-data:/data
+
+volumes:
+  app-data:
