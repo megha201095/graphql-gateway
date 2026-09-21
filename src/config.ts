@@ -16,6 +16,7 @@ const envSchema = z.object({
   NHTSA_GET_VEHICLE_TYPES_URL: z
     .string()
     .default('https://vpic.nhtsa.dot.gov/api/vehicles/GetVehicleTypesForMakeId/{makeId}?format=xml'),
+  MAX_MAKES_TO_INGEST: z.coerce.number().int().positive().default(200),
   INGEST_ON_STARTUP: z
     .string()
     .optional()

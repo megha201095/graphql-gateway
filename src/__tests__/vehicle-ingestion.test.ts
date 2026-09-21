@@ -94,6 +94,37 @@ describe('NHTSA XML transformation', () => {
     ]);
   });
 
+  it('limits how many makes are processed during ingestion', async () => {
+    const fetchMock = vi.fn()
+      .mockResolvedValueOnce({
+        ok: true,
+        text: async () => makesXml,
+      })
+      .mockResolvedValueOnce({
+        ok: true,
+        text: async () => typesXml,
+      })
+      .mockResolvedValueOnce({
+        ok: false,
+        status: 404,
+        text: async () => '',
+      });
+
+    const result = await ingestVehicleData({
+      makesUrl: 'https://example.test/makes?format=XML',
+      vehicleTypesUrlTemplate: 'https://example.test/makes/{makeId}?format=xml',
+      fetcher: fetchMock,
+      maxMakes: 1,
+    });
+
+    expect(fetchMock).toHaveBeenCalledTimes(2);
+    expect(result).toHaveLength(1);
+    expect(result[0]).toMatchObject({
+      makeId: '440',
+      makeName: 'TOYOTA',
+    });
+  });
+
   it('seeds the ingested XML dataset into the Mongo repository', async () => {
     const fetchMock = vi.fn()
       .mockResolvedValueOnce({

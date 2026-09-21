@@ -23,6 +23,7 @@ export type IngestionOptions = {
   makesUrl: string;
   vehicleTypesUrlTemplate: string;
   fetcher?: FetchLike;
+  maxMakes?: number;
 };
 
 const parser = new XMLParser({
@@ -67,6 +68,7 @@ export async function ingestVehicleData({
   makesUrl,
   vehicleTypesUrlTemplate,
   fetcher = fetch,
+  maxMakes = 200,
 }: IngestionOptions): Promise<VehicleMakeWithTypes[]> {
   const makesResponse = await fetcher(makesUrl, { method: 'GET' });
 
@@ -75,7 +77,7 @@ export async function ingestVehicleData({
   }
 
   const makesXml = await makesResponse.text();
-  const makes = transformVehicleMakesXml(makesXml);
+  const makes = transformVehicleMakesXml(makesXml).slice(0, maxMakes);
 
   const merged: VehicleMakeWithTypes[] = [];
 
